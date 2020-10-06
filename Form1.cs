@@ -43,7 +43,6 @@ namespace affine_transformation
             initDrawing();
             polygons = new Polygons(ref figures, this);
             lines = new Lines(ref figures, this);
-            //rightWrongPolygon = new Points(ref polygonList, this);
             this.KeyDown += new KeyEventHandler(Form1_KeyDown);
             this.KeyPreview = true;
         }
