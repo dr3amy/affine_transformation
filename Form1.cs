@@ -19,7 +19,7 @@ namespace affine_transformation
 
         Polygons polygons; //класс для преобразований полигонов
         Lines lines; // класс для преобразований отрезков
-        Points rightWrongPolygon; // класс для классификации точек относительно полигонов
+        //Points rightWrongPolygon; // класс для классификации точек относительно полигонов
 
         /// <summary>
         /// Значение true, если пользователю нужно выбрать точку с помощью мышки как параметр преобразования 
@@ -31,13 +31,11 @@ namespace affine_transformation
         /// </summary>
         bool isLineSelectingStart = false;
         bool isLineSelectingFinish = false;
-        bool isEdgeChoosed = false;
 
         /// <summary>
         /// Начальная точка задаваемой динамически линии
         /// </summary>
         Point lineFrom;
-        Point pointChoosed;
 
         public Form1()
         {
@@ -45,7 +43,7 @@ namespace affine_transformation
             initDrawing();
             polygons = new Polygons(ref figures, this);
             lines = new Lines(ref figures, this);
-            rightWrongPolygon = new Points(ref polygonList, this);
+            //rightWrongPolygon = new Points(ref polygonList, this);
             this.KeyDown += new KeyEventHandler(Form1_KeyDown);
             this.KeyPreview = true;
         }
@@ -121,11 +119,6 @@ namespace affine_transformation
                 lines.selectNextLine();
                 drawFigures();
             }
-            else if (e.KeyData == Keys.Space && rightWrongPolygon.isPointSelectEnabled)
-            {
-                rightWrongPolygon.selectNextPoint();
-                drawFigures();
-            }
 
             else if (e.KeyData == Keys.Enter && polygons.isPolygonSelectEnabled)
             {
@@ -152,15 +145,10 @@ namespace affine_transformation
                 if (rotateLineRadioButton.Checked) lines.rotateLine();
                 else if (findCrossRadioButton.Checked)
                 {
-                    MessageBox.Show("Нарисуйте вторую линию с помощью мыши. Их пересечение будет показано точкой.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Нарисуйте вторую линию с помощью мыши.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     isLineSelectingStart = true;
                 }
                 drawFigures();
-            }
-            else if (e.KeyData == Keys.Enter && rightWrongPolygon.isPointSelectEnabled)
-            {
-                MessageBox.Show("Выберите произвольную точку с помощью ЛКМ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                isPointSelecting = true;
             }
         }
 

@@ -61,7 +61,6 @@
     </Compile>
     <Compile Include="Lines.cs" />
     <Compile Include="Matrix.cs" />
-    <Compile Include="Points.cs" />
     <Compile Include="Polygons.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

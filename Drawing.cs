@@ -14,7 +14,7 @@ namespace affine_transformation
         Pen drawingPen = new Pen(Color.Black);
         Pen defaultPen = new Pen(Color.Black);
         Pen selectedPen = new Pen(Color.Red);
-        List<Figure> polygonList; // выпуклые многоугольники
+        List<Figure> polygonList;
 
         /// <summary>
         /// Инициализировать площадь для рисования
