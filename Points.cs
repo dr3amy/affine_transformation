@@ -10,17 +10,15 @@ namespace affine_transformation
 {
     class Points
     {
-        List<Figure> rightPolygon;
-        List<Figure> wrongPolygon;
+        List<Figure> polygonsList;
         List<Figure> points;
         Form1 form;
         bool isSelectingPoint = false;
         int selectingPointNumber = -1;
 
-        public Points(ref List<Figure> rightPolygon, ref List<Figure> wrongPolygon, Form1 form)
+        public Points(ref List<Figure> polygonsList, Form1 form)
         {
-            this.rightPolygon = rightPolygon;
-            this.wrongPolygon = wrongPolygon;
+            this.polygonsList = polygonsList;
             this.form = form;
         }
 
@@ -30,14 +28,11 @@ namespace affine_transformation
         /// </summary>
         public void startSelectingRightPolygon(int mode)
         {
-            if (mode == -1)
-                points = wrongPolygon;
-            else if (mode == 1)
-                points = rightPolygon;
+            if (mode == 1)
+                points = polygonsList;
             else if (mode == 0)
             {
-                points = wrongPolygon;
-                points.AddRange(rightPolygon);
+                points.AddRange(polygonsList);
             }
 
             if (points.Count == 0)

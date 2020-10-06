@@ -14,8 +14,7 @@ namespace affine_transformation
         Pen drawingPen = new Pen(Color.Black);
         Pen defaultPen = new Pen(Color.Black);
         Pen selectedPen = new Pen(Color.Red);
-        List<Figure> rightPolygon; // выпуклые многоугольники
-        List<Figure> wrongPolygon; // невыпуклые многоугольники
+        List<Figure> polygonList; // выпуклые многоугольники
 
         /// <summary>
         /// Инициализировать площадь для рисования
@@ -26,8 +25,7 @@ namespace affine_transformation
             g = Graphics.FromImage(imageToDrawBox.Image);
             g.Clear(Color.White);
             border = new List<PointF>();
-            rightPolygon = new List<Figure>();
-            wrongPolygon = new List<Figure>();
+            polygonList = new List<Figure>();
         }
 
         /// <summary>
@@ -40,8 +38,7 @@ namespace affine_transformation
             g.Clear(Color.White);
             imageToDrawBox.Refresh();
             figures.Clear();
-            wrongPolygon.Clear();
-            rightPolygon.Clear();
+            polygonList.Clear();
             startDrawingPolygon();
             imageToDrawBox.Focus();
         }
@@ -55,53 +52,7 @@ namespace affine_transformation
             {
                 Figure figure = new Figure() { points = border.ToList() };
                 figures.Add(figure);
-                if (border.Count > 2) // это точно многоугольник, проверка - выпуклый или нет
-                { // graham
-                    var fig = border.ToList();
-                    fig.Sort((k, t) => t.Y.CompareTo(k.Y));
-                    float x0 = fig[0].X;
-                    float y0 = fig[0].Y;
-                    fig.Remove(fig[0]);
-                    fig.Sort((k, t) => t.X.CompareTo(k.X));
-                    fig.Insert(0, new PointF(x0, y0));
-
-                    int counter = 2; // в счетчике у нас точки [0], [1]
-                    for (int i = 2; i < fig.Count + 1; i++)
-                    {
-                        for (int j = i - 1; j > 1; j--)
-                        {
-                            x0 = fig[j - 1].X;
-                            y0 = fig[j - 1].Y;
-                            double xA = fig[j].X - x0;
-                            double yA = fig[j].Y - y0;
-
-                            if (i == fig.Count && (fig[0].Y - y0) * xA - (fig[0].X - x0) < 0)
-                                counter--;
-                            else if (i != fig.Count && (fig[i].Y - y0) * xA - (fig[i].X - x0) < 0) // i-ая точка справа от луча (j)(j - 1)
-                                counter--;
-                            if (i != fig.Count && (fig[i].Y - y0) * xA - (fig[i].X - x0) > 0) // i-ая точка слева от луча (j)(j - 1)
-                            {
-                                counter++;
-                                break;
-                            }
-                            if (counter == 2)
-                            {
-                                counter++;
-                                break;
-                            }
-                        }
-                        if (counter == 2)
-                            counter++;
-                        if (counter == fig.Count)
-                            break;
-                    }
-                    //проверка для первой и последней точек
-
-                    if (counter == fig.Count)
-                        rightPolygon.Add(figure);
-                    else if (counter != fig.Count)
-                        wrongPolygon.Add(figure);
-                }
+                polygonList.Add(figure);
             }
             border.Clear();
         }

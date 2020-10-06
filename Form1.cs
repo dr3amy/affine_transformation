@@ -45,7 +45,7 @@ namespace affine_transformation
             initDrawing();
             polygons = new Polygons(ref figures, this);
             lines = new Lines(ref figures, this);
-            rightWrongPolygon = new Points(ref rightPolygon, ref wrongPolygon, this);
+            rightWrongPolygon = new Points(ref polygonList, this);
             this.KeyDown += new KeyEventHandler(Form1_KeyDown);
             this.KeyPreview = true;
         }
@@ -103,21 +103,6 @@ namespace affine_transformation
             {
                 polygons.stopSelectingPolygon(); //отменяем выделение полигонов
                 lines.startSelectingLine();
-                drawFigures();
-            }
-
-            //если выбрана любая операция с классификацией точки
-            else if (currentModeButton.Parent == pointsPoligonsGroupBox && currentModeButton.Checked)
-            {
-                polygons.stopSelectingPolygon(); //отменяем выделение полигонов
-                lines.stopSelectingLines(); //отменяем выделение отрезков
-
-                if (pointInPolytopeRadioButton.Checked)
-                    rightWrongPolygon.startSelectingRightPolygon(1);
-                else if (pointInNotPolytopeRadioButton.Checked)
-                    rightWrongPolygon.startSelectingRightPolygon(-1);
-                else if (pointAndEdgeRadioButton.Checked)
-                    rightWrongPolygon.startSelectingRightPolygon(0);
                 drawFigures();
             }
         }
@@ -195,22 +180,6 @@ namespace affine_transformation
                     polygons.scalePolygonAroundPoint(e.Location);
                     drawFigures(); //отображаем изменения
                 }
-                else if (pointInPolytopeRadioButton.Checked)
-                {
-                    rightWrongPolygon.pointInRightPolygon(e.Location);
-                    drawFigures();
-                }
-                else if (pointInNotPolytopeRadioButton.Checked)
-                {
-                    rightWrongPolygon.pointInWrongPolygon(e.Location);
-                    drawFigures();
-                }
-                else if (pointAndEdgeRadioButton.Checked)
-                {
-                    pointChoosed = e.Location;
-                    MessageBox.Show("Выберите ЛКМ необходимое ребро многоугольника", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    isEdgeChoosed = true;
-                }
             }
             else if (isLineSelectingStart) // если нужно дорисовать прямую
             {
@@ -218,12 +187,6 @@ namespace affine_transformation
                 isLineSelectingFinish = true;
                 lineFrom = e.Location;
                 setStartPointOfLine(lineFrom);
-            }
-            else if (pointAndEdgeRadioButton.Checked && isEdgeChoosed)
-            {
-                isEdgeChoosed = false;
-                rightWrongPolygon.pointAndEdge(pointChoosed, e.Location);
-                drawFigures();
             }
             else //если нет, то сейчас можно рисовать
             {
