@@ -19,7 +19,6 @@ namespace affine_transformation
 
         Polygons polygons; //класс для преобразований полигонов
         Lines lines; // класс для преобразований отрезков
-        //Points rightWrongPolygon; // класс для классификации точек относительно полигонов
 
         /// <summary>
         /// Значение true, если пользователю нужно выбрать точку с помощью мышки как параметр преобразования 
@@ -106,8 +105,8 @@ namespace affine_transformation
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.KeyData == Keys.Enter && PolygonRadioButton.Checked) finishDrawingPolygon();
-
+            if (e.KeyData == Keys.Enter && PolygonRadioButton.Checked) 
+                finishDrawingPolygon();
             else if (e.KeyData == Keys.Space && polygons.isPolygonSelectEnabled)
             {
                 polygons.selectNextPolygon();
@@ -122,26 +121,30 @@ namespace affine_transformation
             else if (e.KeyData == Keys.Enter && polygons.isPolygonSelectEnabled)
             {
                 //обработка полигона
-                if (movePolygonRadioButton.Checked) polygons.movePolygon();
+                if (movePolygonRadioButton.Checked) 
+                    polygons.movePolygon();
                 else if (rotatePolygonAroundPointRadioButton.Checked)
                 {
                     MessageBox.Show("Выберите произвольную точку с помощью ЛКМ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     isPointSelecting = true;
                 }
-                else if (rotatePolygonAroundCenterRadioButton.Checked) polygons.rotatePolygonAroundCenter();
+                else if (rotatePolygonAroundCenterRadioButton.Checked) 
+                    polygons.rotatePolygonAroundCenter();
                 else if (scalePolygonAroundPointRadioButton.Checked)
                 {
                     MessageBox.Show("Выберите произвольную точку с помощью ЛКМ", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     isPointSelecting = true;
                 }
-                else if (scalePolygonAroundCenterRadioButton.Checked) polygons.scalePolygonAroundCenter();
+                else if (scalePolygonAroundCenterRadioButton.Checked) 
+                    polygons.scalePolygonAroundCenter();
 
                 drawFigures(); //отображаем изменения
             }
             else if (e.KeyData == Keys.Enter && lines.isLineSelectEnabled)
             {
                 // обработка линий
-                if (rotateLineRadioButton.Checked) lines.rotateLine();
+                if (rotateLineRadioButton.Checked) 
+                    lines.rotateLine();
                 else if (findCrossRadioButton.Checked)
                 {
                     MessageBox.Show("Нарисуйте вторую линию с помощью мыши.", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -151,7 +154,6 @@ namespace affine_transformation
             }
         }
 
-
         private void imageToDrawBox_MouseDown_1(object sender, MouseEventArgs e)
         {
             if (isPointSelecting) //если сейчас нужно выбрать точку как параметр преобразования
@@ -160,12 +162,12 @@ namespace affine_transformation
                 if (rotatePolygonAroundPointRadioButton.Checked)
                 {
                     polygons.rotatePolygonAroundPoint(e.Location);
-                    drawFigures(); //отображаем изменения
+                    drawFigures(); 
                 }
                 else if (scalePolygonAroundPointRadioButton.Checked)
                 {
                     polygons.scalePolygonAroundPoint(e.Location);
-                    drawFigures(); //отображаем изменения
+                    drawFigures(); 
                 }
             }
             else if (isLineSelectingStart) // если нужно дорисовать прямую
@@ -201,7 +203,5 @@ namespace affine_transformation
                 drawFigures();
             }
         }
-
-       
     }
 }

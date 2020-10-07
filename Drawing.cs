@@ -146,8 +146,10 @@ namespace affine_transformation
             {
                 drawingPen = figure.selected ? selectedPen : defaultPen;
                 var points = figure.points;
-                if (points.Count == 1) g.FillRectangle(new SolidBrush(Color.Black), new Rectangle((int)points[0].X, (int)points[0].Y, 3, 3));
-                else if (points.Count == 2) g.DrawLine(drawingPen, points[0], points[1]);
+                if (points.Count == 1) 
+                    g.FillRectangle(new SolidBrush(Color.Black), new Rectangle((int)points[0].X, (int)points[0].Y, 3, 3));
+                else if (points.Count == 2) 
+                    g.DrawLine(drawingPen, points[0], points[1]);
                 else
                 {
                     for (int i = 1; i < points.Count; i++)

@@ -120,7 +120,7 @@ namespace affine_transformation
         {
             if (polygons == null || selectedPolygonInd < 0) return;
 
-            var dialog = new InputBox("Введите угол поворота (целое число градусов)");
+            var dialog = new InputBox("Введите угол поворота");
             int deg = 0;
             if (dialog.ShowDialog() == DialogResult.Cancel) return;
             if (!int.TryParse(dialog.ResultText, out deg)) return;
@@ -157,7 +157,8 @@ namespace affine_transformation
         /// </summary>
         public void rotatePolygonAroundCenter()
         {
-            if (polygons == null || selectedPolygonInd < 0) return;
+            if (polygons == null || selectedPolygonInd < 0) 
+                return;
             Figure selectedPolygon = polygons[selectedPolygonInd];
             Point massCenter = getMassCenter(selectedPolygon);
             rotatePolygonAroundPoint(massCenter);
