@@ -22,7 +22,7 @@ namespace affine_transformation
         }
 
         /// <summary>
-        /// Начать процесс выбора полигона для дальнейших преобразований
+        /// Начать процесс выбора линии для дальнейших преобразований
         /// </summary>
         public void startSelectingLine()
         {
@@ -34,11 +34,17 @@ namespace affine_transformation
                 isSelectingLine = true;
                 MessageBox.Show("Выберите нужную линию, переключаясь между ними с помощью клавиши пробела, " +
                 "а затем нажмите Enter для выбора", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                //Всегда выбираем первую доступную линию
                 selectFirstLine();
             }
             form.imageToDrawBox.Focus();
         }
 
+        /// <summary>
+        /// Выделить i-ю линию 
+        /// </summary>
+        /// <param name="i"></param>
         private void selectLine(int i)
         {
             if (lines == null) return;
@@ -51,20 +57,12 @@ namespace affine_transformation
         /// <summary>
         /// Выделить первую линию
         /// </summary>
-        public void selectFirstLine()
-        {
-            selectLine(0);
-        }
+        public void selectFirstLine() => selectLine(0);
 
         /// <summary>
         /// Выделить следующую линию
         /// </summary>
-        public void selectNextLine()
-        {
-            int nextInd = selectingLineNumber + 1;
-            if (nextInd == lines.Count) nextInd = 0;
-            selectLine(nextInd);
-        }
+        public void selectNextLine() => selectLine((selectingLineNumber + 1) % lines.Count);
 
         public bool isLineSelectEnabled => isSelectingLine;
 
@@ -87,50 +85,22 @@ namespace affine_transformation
             if (lines == null || selectingLineNumber < 0) return;
 
             Figure selectedLine = lines[selectingLineNumber];
-            if (selectedLine.points[0].X > selectedLine.points[1].X) //упорядочивание по Х
-            {
-                var temp = selectedLine.points[0];
-                selectedLine.points[0] = selectedLine.points[1];
-                selectedLine.points[1] = temp;
-            }
 
-            // построение новой прямой
-            if (selectedLine.points[0].X != selectedLine.points[1].X)
-            {
-                if (selectedLine.points[0].Y != selectedLine.points[1].Y) //восходящая и нисходящая прямая
-                {
-                    float centerX = (selectedLine.points[0].X + selectedLine.points[1].X) / 2;
-                    float lengthX = Math.Abs(selectedLine.points[0].X - selectedLine.points[1].X) / 2;
-                    float centerY = (selectedLine.points[0].Y + selectedLine.points[1].Y) / 2;
-                    float lengthY = Math.Abs(selectedLine.points[0].Y - selectedLine.points[1].Y) / 2;
+            //Точка центра
+            int dx = (int)(Math.Round(selectedLine.points[0].X + selectedLine.points[1].X)) / 2;
+            int dy = (int)(Math.Round(selectedLine.points[0].Y + selectedLine.points[1].Y)) / 2;
 
-                    if (selectedLine.points[0].Y > selectedLine.points[1].Y)
-                    {
-                        selectedLine.points[0] = new PointF(centerX + lengthY, centerY + lengthX);
-                        selectedLine.points[1] = new PointF(centerX - lengthY, centerY - lengthX);
-                    }
-                    else if (selectedLine.points[0].Y < selectedLine.points[1].Y)
-                    {
-                        selectedLine.points[0] = new PointF(centerX + lengthY, centerY - lengthX);
-                        selectedLine.points[1] = new PointF(centerX - lengthY, centerY + lengthX);
-                    }
-                }
-                else if (selectedLine.points[0].Y == selectedLine.points[1].Y) //горизонтальная прямая
-                {
-                    float centerX = (selectedLine.points[0].X + selectedLine.points[1].X) / 2;
-                    float lengthX = Math.Abs(selectedLine.points[0].X - selectedLine.points[1].X) / 2;
-                    float y = selectedLine.points[0].Y;
-                    selectedLine.points[0] = new PointF(y, centerX + lengthX);
-                    selectedLine.points[1] = new PointF(y, centerX - lengthX);
-                }
-            }
-            else if (selectedLine.points[0].X == selectedLine.points[1].X)
+            //найдем матрицу переноса до точки, вокруг которой делаем поворот
+            Matrix33 moveMatrix = new Matrix33(new double[3] { 1, 0, 0 }, new double[3] { 0, 1, 0 }, new double[3] { -dx, -dy, 1 });
+            Matrix33 moveMatrix2 = new Matrix33(new double[3] { 1, 0, 0 }, new double[3] { 0, 1, 0 }, new double[3] { dx, dy, 1 });
+
+            Matrix33 rotateMatrix = new Matrix33(new double[3] { 0, 1, 0 }, new double[3] { -1, 0, 0 }, new double[3] { 0, 0, 1 });
+            
+            for (int i = 0; i < 2; i++)
             {
-                float centerY = (selectedLine.points[0].Y + selectedLine.points[1].Y) / 2;
-                float lengthY = Math.Abs(selectedLine.points[0].Y - selectedLine.points[1].Y) / 2;
-                float x = selectedLine.points[0].X;
-                selectedLine.points[0] = new PointF(centerY + lengthY, x);
-                selectedLine.points[1] = new PointF(centerY - lengthY, x);
+                Matrix33 pointMatrix = Matrix33.getMatrixFromPoint(selectedLine.points[i]);
+                Matrix33 resMatrix = pointMatrix * moveMatrix * rotateMatrix * moveMatrix2;
+                selectedLine.points[i] = resMatrix.toPoint();
             }
         }
 
@@ -143,6 +113,7 @@ namespace affine_transformation
             Figure selectedLine = lines[selectingLineNumber];
             PointF a = selectedLine.points[0];
             PointF b = selectedLine.points[1];
+
             if (a.X > b.X) //упорядочиваем a, b по Х по возрастанию
             {
                 PointF temp = a;
@@ -159,7 +130,7 @@ namespace affine_transformation
             }
             else if (from == to) //нарисовали точку
             {
-                MessageBox.Show("Это точка, а не линия!!!!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Это точка, а не линия!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
 
@@ -168,21 +139,35 @@ namespace affine_transformation
                 MessageBox.Show("Эти линии параллельны => не пересекаются!", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
             else
             {
-                double k = (b.Y - a.Y) * (d.Y - c.Y) * (a.X - c.X);
-                double l = (b.X - a.X) * (d.Y - c.Y);
-                double m = (d.X - c.X) * (b.Y - a.Y);
                 double y, x;
-                if (l == m)
-                    y = 0;
-                else
-                    y = (l * a.Y - m * c.Y - k) / (l - m);
+                double a1,a2, b1,b2;
                 if (b.Y == a.Y)
-                    x = a.X;
+                {
+                    y = a.Y;
+                    a2 = (c.Y - d.Y) / (c.X - d.X);
+                    b2 = d.Y - a2 * d.X;
+                    x = (y - b2) / a2;
+                }
+                else if (c.Y == d.Y)
+                {
+                    y = a.Y;
+                    a1 = (a.Y - b.Y) / (a.X - b.X);
+                    b1 = b.Y - a1 * b.X;
+                    x = (y - b1) / a1;
+                }
                 else
-                    x = ((b.X - a.X) * (y - a.Y) / (b.Y - a.Y)) + a.X;
+                {
+                    a2 = (c.Y - d.Y) / (c.X - d.X);
+                    b2 = d.Y - a2 * d.X;
+                    a1 = (a.Y - b.Y) / (a.X - b.X);
+                    b1 = b.Y - a1 * b.X;
+                    x = (b2 - b1) / (a1 - a2);
+                    y = a1 * x + b1;
+                }
+                
                 if (x < 0 && x > form.imageToDrawBox.Width || y < 0 && y > form.imageToDrawBox.Height)
                 {
-                    MessageBox.Show("Упс, точка за пределами окна...", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Out of bounds", "", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
                 {
